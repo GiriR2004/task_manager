@@ -6,7 +6,7 @@ const TaskContext = createContext();
 export const useTaskContext = () => useContext(TaskContext);
 
 // 🚀 IMPORTANT: Define your deployed backend API base URL here
-const API_BASE_URL = 'https://task-manager-backend-qjyc.onrender.com'; 
+ export const API_BASE_URL = 'https://task-manager-backend-qjyc.onrender.com'; 
 
 export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
