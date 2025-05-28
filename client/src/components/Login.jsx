@@ -14,20 +14,12 @@ function Login() {
   const { login } = useTaskContext();
   const googleClientId = "814114839502-uc9fttjbs81n90lu1jaasf795gujhrvm.apps.googleusercontent.com";
 
-  /**
-   * Handles changes to the form input fields (email, password).
-   * Updates the formData state with the new input value.
-   * @param {Object} e - The event object from the input change.
-   */
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Handles the submission of the login form.
-   * Sends user credentials to the backend for authentication.
-   * @param {Object} e - The event object from the form submission.
-   */
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
     setMessage(''); // Clear any previous messages
@@ -43,12 +35,12 @@ function Login() {
       const data = await res.json(); // Parse the JSON response
 
       if (res.ok) {
-        // If login is successful, store token and user data, then navigate to dashboard
+       
         login(data.token, { name: data.user.name, email: data.user.email });
         setMessage('Login successful! Redirecting to dashboard...');
         navigate('/dashboard');
       } else {
-        // If login fails, display the error message from the backend
+        
         setMessage(data.msg || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
@@ -60,18 +52,14 @@ function Login() {
     }
   };
 
-  /**
-   * Handles successful Google OAuth login.
-   * Sends the Google credential to the backend for verification and user login.
-   * @param {Object} credentialResponse - The response object from Google Login.
-   */
+ 
   const handleGoogleSuccess = async (credentialResponse) => {
     console.log("Google Login Success:", credentialResponse);
     setIsLoading(true); // Set loading state
     setMessage(''); // Clear any previous messages
 
     try {
-      // Use the imported API_BASE_URL for the Google login endpoint
+      
       const res = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,18 +85,14 @@ function Login() {
     }
   };
 
-  /**
-   * Handles failed Google OAuth login.
-   * Displays an error message to the user.
-   * @param {Object} error - The error object from Google Login.
-   */
+ 
   const handleGoogleFailure = (error) => {
     console.error("Google Login Failed:", error);
     setMessage('Google login failed. Please try again.');
   };
 
   return (
-    // GoogleOAuthProvider wraps the component to provide the client ID
+    
     <GoogleOAuthProvider clientId={googleClientId}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 font-sans">
         <div className="w-full max-w-md">
@@ -119,9 +103,9 @@ function Login() {
               <p className="text-indigo-200">Please sign in to your account</p>
             </div>
 
-            {/* Login form */}
+           
             <form onSubmit={handleSubmit} className="px-8 py-6 space-y-6">
-              {/* Email input field */}
+             
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
                   Email
