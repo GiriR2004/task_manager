@@ -5,6 +5,9 @@ import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 const TaskContext = createContext();
 export const useTaskContext = () => useContext(TaskContext);
 
+// 🚀 IMPORTANT: Define your deployed backend API base URL here
+const API_BASE_URL = 'https://task-manager-backend-qjyc.onrender.com'; 
+
 export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -22,6 +25,11 @@ export const TaskProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!token);
   const [loading, setLoading] = useState(true);
 
+  // New: For tracking task fetch loading and errors (as discussed previously)
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+
   const axiosConfig = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${token}`,
@@ -31,13 +39,23 @@ export const TaskProvider = ({ children }) => {
   const fetchTasks = async () => {
     if (!token) {
       console.warn('Attempted to fetch tasks without a token.');
+      setIsLoading(false); // Ensure loading is false if no token
+      setError(null);      // Clear any previous errors
       return;
     }
+
+    setIsLoading(true); // Set loading to true before fetching
+    setError(null);      // Clear any previous errors
+
     try {
-      const res = await axios.get('http://localhost:5000/api/tasks/get', axiosConfig);
+      // ✅ Change here: Use API_BASE_URL
+      const res = await axios.get(`${API_BASE_URL}/api/tasks/get`, axiosConfig);
       setTasks(res.data.tasks);
+      setIsLoading(false); // Set loading to false on success
     } catch (error) {
       console.error('Error fetching tasks:', error.response?.data || error.message);
+      setError(error.response?.data?.msg || error.message || 'Failed to fetch tasks.'); // Set error message
+      setIsLoading(false); // Set loading to false on error
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         logout();
       }
@@ -46,7 +64,8 @@ export const TaskProvider = ({ children }) => {
 
   const addTask = async (taskData) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/tasks/create', taskData, axiosConfig);
+      // ✅ Change here: Use API_BASE_URL
+      const res = await axios.post(`${API_BASE_URL}/api/tasks/create`, taskData, axiosConfig);
       setTasks((prev) => [...prev, res.data]);
     } catch (error) {
       console.error('Error adding task:', error.response?.data || error.message);
@@ -58,7 +77,8 @@ export const TaskProvider = ({ children }) => {
 
   const updateTask = async (taskData) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/tasks/update/${taskData._id}`, taskData, axiosConfig);
+      // ✅ Change here: Use API_BASE_URL
+      const res = await axios.put(`${API_BASE_URL}/api/tasks/update/${taskData._id}`, taskData, axiosConfig);
       setTasks((prev) =>
         prev.map((task) => (task._id === taskData._id ? res.data : task))
       );
@@ -72,7 +92,8 @@ export const TaskProvider = ({ children }) => {
 
   const deleteTask = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/del/${id}`, axiosConfig);
+      // ✅ Change here: Use API_BASE_URL
+      await axios.delete(`${API_BASE_URL}/api/tasks/del/${id}`, axiosConfig);
       setTasks((prev) => prev.filter((task) => task._id !== id));
     } catch (error) {
       console.error('Error deleting task:', error.response?.data || error.message);
@@ -111,6 +132,8 @@ export const TaskProvider = ({ children }) => {
     setUser(null);
     setIsLoggedIn(false);
     setTasks([]);
+    setIsLoading(false); // Reset loading state on logout
+    setError(null);      // Reset error state on logout
   };
 
   useEffect(() => {
@@ -142,6 +165,8 @@ export const TaskProvider = ({ children }) => {
       fetchTasks();
     } else {
       setTasks([]);
+      setIsLoading(false); // Ensure loading is false if no token
+      setError(null);      // Ensure no error is displayed
     }
   }, [token, isLoggedIn]);
 
@@ -162,6 +187,8 @@ export const TaskProvider = ({ children }) => {
         user,
         isLoggedIn,
         loading,
+        isLoading, // Make isLoading available in context
+        error,     // Make error available in context
         login,
         logout,
       }}
