@@ -1,12 +1,15 @@
+// client/src/components/Signup.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserIcon, MailIcon, LockIcon } from 'lucide-react';
+import { useTaskContext } from '../context/TaskContext'; // Auto-login support
 
 function Signup() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useTaskContext(); // Use context login
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,9 +29,10 @@ function Signup() {
 
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem('token', data.token);
-        setMessage('Signup successful! Redirecting to login...');
-        navigate('/');
+        localStorage.setItem('token', data.token); // Save token
+        login(data.token, { name: data.user.name, email: data.user.email }); // Auto-login
+        setMessage('Signup successful! Redirecting...');
+        navigate('/dashboard'); // Redirect to dashboard or home page
       } else {
         setMessage(data.msg || 'Signup failed. Please try again.');
       }
@@ -51,9 +55,7 @@ function Signup() {
 
           <form onSubmit={handleSubmit} className="px-8 py-6 space-y-6">
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-gray-700 block">
-                Name
-              </label>
+              <label htmlFor="name" className="text-sm font-medium text-gray-700 block">Name</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <UserIcon className="h-5 w-5 text-gray-400" />
@@ -73,9 +75,7 @@ function Signup() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
-                Email
-              </label>
+              <label htmlFor="email" className="text-sm font-medium text-gray-700 block">Email</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MailIcon className="h-5 w-5 text-gray-400" />
@@ -95,9 +95,7 @@ function Signup() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700 block">
-                Password
-              </label>
+              <label htmlFor="password" className="text-sm font-medium text-gray-700 block">Password</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <LockIcon className="h-5 w-5 text-gray-400" />
@@ -117,9 +115,7 @@ function Signup() {
             </div>
 
             {message && (
-              <div className={`mt-4 p-3 rounded-md text-sm ${
-                message.includes('successful') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-              }`}>
+              <div className={`mt-4 p-3 rounded-md text-sm ${message.includes('successful') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                 {message}
               </div>
             )}

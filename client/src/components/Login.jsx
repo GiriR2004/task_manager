@@ -1,3 +1,5 @@
+// client/src/components/Login.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockIcon, MailIcon } from 'lucide-react';
@@ -9,8 +11,7 @@ function Login() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { setToken, setUser } = useTaskContext();
-
+  const { login } = useTaskContext();
   const googleClientId = "814114839502-uc9fttjbs81n90lu1jaasf795gujhrvm.apps.googleusercontent.com";
 
   const handleChange = (e) => {
@@ -21,19 +22,15 @@ function Login() {
     e.preventDefault();
     setMessage('');
     setIsLoading(true);
-
     try {
       const res = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem('token', data.token);
-        setToken(data.token);
-        setUser({ name: data.user.name, email: data.user.email });
+        login(data.token, { name: data.user.name, email: data.user.email });
         setMessage('Login successful! Redirecting to dashboard...');
         navigate('/dashboard');
       } else {
@@ -51,20 +48,15 @@ function Login() {
     console.log("Google Login Success:", credentialResponse);
     setIsLoading(true);
     setMessage('');
-
     try {
-      // Send the ID token to your backend for verification and user creation/login
-      const res = await fetch('http://localhost:5000/api/auth/google-login', { // You'll need to create this endpoint
+      const res = await fetch('http://localhost:5000/api/auth/google-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: credentialResponse.credential }),
       });
-
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem('token', data.token);
-        setToken(data.token);
-        setUser({ name: data.user.name, email: data.user.email });
+        login(data.token, { name: data.user.name, email: data.user.email });
         setMessage('Google login successful! Redirecting to dashboard...');
         navigate('/dashboard');
       } else {
@@ -189,11 +181,11 @@ function Login() {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleFailure}
-                  size="large" // Can be 'small', 'medium', 'large'
-                  text="continue_with" // Can be 'signin_with', 'signup_with', 'continue_with'
-                  shape="rectangular" // Can be 'rectangular', 'pill', 'circle'
-                  theme="outline" // Can be 'outline', 'filled_blue', 'filled_black'
-                  width="100%" // Adjust width as needed
+                  size="large"
+                  text="continue_with"
+                  shape="rectangular"
+                  theme="outline"
+                  width="100%"
                   disabled={isLoading}
                 />
 

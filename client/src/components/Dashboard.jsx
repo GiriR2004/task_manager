@@ -53,7 +53,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 font-sans">
-      <Navbar openTaskModal={openAddModal} />
+   
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="md:flex md:items-center md:justify-between">
@@ -109,9 +109,9 @@ const Dashboard = () => {
               {filteredTasks.length > 0 ? (
                 <motion.div
                   className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
+                  //initial="hidden"
+                  //animate="visible"
+                  //exit="exit"
                 >
                   {filteredTasks.map((task) => (
                     <TaskCard
