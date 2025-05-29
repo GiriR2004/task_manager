@@ -7,6 +7,9 @@ Frontend: https://task-manager-frontend1-4wwx.onrender.com/login
 🎥 Demo Video
 https://drive.google.com/file/d/1UUoKGg7XuE-ApZ2PDX6LlQZPx8Vjynhg/view?usp=drive_link
 
+
+
+
 ✨ Key Features
 
 🔐 User Authentication
@@ -39,6 +42,9 @@ Node.js & Express.js – REST API server
 MongoDB Atlas – cloud-based database
 JWT – secure user sessions
 Nodemailer – email notifications
+
+
+
 
 📌 Why This Project Stands Out
 Combines real-world use cases with clean architecture and efficient user experience
